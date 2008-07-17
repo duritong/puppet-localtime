@@ -1,36 +1,20 @@
-# modules/skeleton/manifests/init.pp - manage skeleton stuff
+# modules/localtime/manifests/init.pp - manage localtime stuff
 # Copyright (C) 2007 admin@immerda.ch
 # GPLv3
 
-# modules_dir { "skeleton": }
+# modules_dir { "localtime": }
 
-class skeleton {
-    case $operatingsystem {
-        gentoo: { include skeleton::gentoo }
-        default: { include skeleton::base }
+class localtime {
+}
+
+define localtime::etc_localtime (
+    $zoneinfo =  '/usr/share/zoneinfo/Europe/Zurich'
+){
+    include localtime
+
+    file { "/etc/localtime":
+            ensure => link,
+            target => "${zoneinfo}",
     }
 }
 
-class skeleton::base {
-    package{'skeleton':
-        ensure => installed,
-    }
-
-    service{skeleton:
-        ensure => running,
-        enable => true,
-        #hasstatus => true, #fixme!
-        require => Package[skeleton],
-    }
-
-}
-
-class skeleton::gentoo inherits skeleton::base {
-    Package[skeleton]{
-        category => 'some-category',
-    }
-
-    #conf.d file if needed
-    # needs module gentoo
-    #gentoo::etcconfd { skeleton: require => "Package[skeleton]", notify => "Service[skeleton]"}
-}
